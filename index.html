@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Today To-Do</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Pretendard", -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .app {
+      width: 360px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: 20px;
+      text-align: center;
+      color: #333;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    input {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    button {
+      padding: 10px 14px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      margin-bottom: 8px;
+      background: #f7f7f9;
+      border-radius: 10px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    li input {
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    li span {
+      font-size: 14px;
+      color: #333;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <h1>오늘의 할 일</h1>
+
+    <div class="input-area">
+      <input id="todoInput" placeholder="할 일을 입력하세요" />
+      <button onclick="addTodo()">추가</button>
+    </div>
+
+    <ul id="todoList"></ul>
+  </div>
+
+  <script>
+    const input = document.getElementById("todoInput");
+    const list = document.getElementById("todoList");
+
+    let todos = JSON.parse(localStorage.getItem("todos")) || [];
+
+    function save() {
+      localStorage.setItem("todos", JSON.stringify(todos));
+    }
+
+    function render() {
+      list.innerHTML = "";
+      todos.forEach((todo, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          <input type="checkbox" />
+          <span>${todo}</span>
+        `;
+
+        li.querySelector("input").addEventListener("change", () => {
+          todos.splice(index, 1);
+          save();
+          render();
+        });
+
+        list.appendChild(li);
+      });
+    }
+
+    function addTodo() {
+      const value = input.value.trim();
+      if (!value) return;
+
+      todos.push(value);
+      input.value = "";
+      save();
+      render();
+    }
+
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter") addTodo();
+    });
+
+    render();
+  </script>
+</body>
+</html>
